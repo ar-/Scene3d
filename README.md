@@ -1,3 +1,5 @@
+[ ![Scene3D](https://api.bintray.com/packages/hoboris/maven/scene3d/images/download.svg) ](https://bintray.com/hoboris/maven/scene3d/_latestVersion)
+
 Scene3d
 =======
 

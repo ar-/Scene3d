@@ -1,10 +1,15 @@
 Scene3d
 =======
 
-A standalone scene3d graph for libgdx .. use it if you need it. .. still not very stable
+A standalone Scene3D graph for libGDX
 
-Consisting of Actor3d and Action3d which can be used on a Stage3d very similar to scene2d
+Consisting of Actor3D and Action3D which can be used on a Stage3D very similar to Scene2D
 
+forked from [pyros2097/Scene3d](https://github.com/pyros2097/Scene3d)
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/pyros2097/scene3d/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+Download
+=======
 
+```Groovy
+implementation 'com.github.hoboris:scene3d:1.0.0'
+```

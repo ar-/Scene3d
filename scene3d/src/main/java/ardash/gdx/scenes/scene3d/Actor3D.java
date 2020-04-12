@@ -1,7 +1,9 @@
 package ardash.gdx.scenes.scene3d;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -85,6 +87,9 @@ public class Actor3D extends ModelInstance implements Disposable {
     }
 
     public void draw(ModelBatch modelBatch, Environment environment){
+    	Gdx.gl20.glEnable(GL20.GL_BLEND);
+    	Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
         modelBatch.render(this, environment);
         drawDebug(modelBatch, environment);
     }
@@ -239,7 +244,7 @@ public class Actor3D extends ModelInstance implements Disposable {
         transform.setToTranslationAndScaling(this.x, this.y, this.z, scaleX, scaleY, scaleZ);
         transform.mul(rotationMatrix);
     }
-
+    
     /*
      *  Set the actor's rotation values to new yaw, pitch and roll
      *  @param newYaw, newPitch, newRoll these values must be within 360 degrees
@@ -527,4 +532,11 @@ public class Actor3D extends ModelInstance implements Disposable {
     public void dispose() {
         if (axis != null) axis.model.dispose();
     }
+    
+    public void moveBy (float x, float y)
+    {
+    	translate(x, y, 0f);
+    }
+
+
 }

@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.SnapshotArray;
@@ -33,66 +35,47 @@ public class Group3D extends Actor3D {
     /** Draws the group and its children. */
     @Override
     public void draw(ModelBatch modelBatch, Environment environment) {
-        super.draw(modelBatch, environment);
-        drawChildren(modelBatch, environment);
-    }
-
-
-    public void drawChildren(ModelBatch modelBatch, Environment environment){
         SnapshotArray<Actor3D> children = this.children;
         Actor3D[] actors = children.begin();
         visibleCount = 0;
         for (int i = 0, n = children.size; i < n; i++){
-            if (actors[i] instanceof Group3D){
-                ((Group3D) actors[i]).drawChildren(modelBatch, environment);
-            }
-            else{
-                float offsetX = x, offsetY = y, offsetZ = z;
-                float offsetScaleX = scaleX, offsetScaleY = scaleY, offsetScaleZ = scaleZ;
-                float offsetYaw = yaw, offsetPitch = pitch, offsetRoll = roll;
-                x = 0;
-                y = 0;
-                z = 0;
-                scaleX = 0;
-                scaleY = 0;
-                scaleZ = 0;
-                yaw = 0;
-                pitch = 0;
-                roll = 0;
                 Actor3D child = actors[i];
                 if (!child.isVisible()) continue;
-                float cx = child.x, cy = child.y, cz = child.z;
-                float sx = child.scaleX, sy = child.scaleY, sz = child.scaleZ;
-                float ry = child.yaw, rp = child.pitch, rr = child.roll;
-                child.setPosition(cx + offsetX, cy + offsetY, cz + offsetZ);
-                child.setScale(sx + offsetScaleX, sy + offsetScaleY, sz + offsetScaleZ);
-                child.setRotation(ry + offsetYaw, rp + offsetPitch, rr +offsetRoll);
-                if (child.isCullable(getStage().getCamera())) {
-                    child.draw(modelBatch, environment);
-                    visibleCount++;
-                }
-                child.x = cx;
-                child.y = cy;
-                child.z = cz;
-                x = offsetX;
-                y = offsetY;
-                z = offsetZ;
-                child.scaleX = sx;
-                child.scaleY = sy;
-                child.scaleZ = sz;
-                scaleX = offsetScaleX;
-                scaleY = offsetScaleY;
-                scaleZ = offsetScaleZ;
-                child.yaw = ry;
-                child.pitch = rp;
-                child.roll = rr;
-                yaw = offsetYaw;
-                pitch = offsetPitch;
-                roll = offsetRoll;
-            }
+                
+                // update childs matrix
+                child.transform.setToTranslationAndScaling(child.x, child.y, child.z, child.scaleX, child.scaleY, child.scaleZ);
+                child.transform.mul(child.rotationMatrix);
+                Matrix4 m4 = new Matrix4();
+                m4.setToTranslationAndScaling(x, y, z, scaleX, scaleY, scaleZ);
+                m4.mul(rotationMatrix);
+
+                child.transform.mulLeft(m4);
+                child.draw(modelBatch, environment);
         }
         children.end();
     }
+
+
+//    public void drawChildren(ModelBatch modelBatch, Environment environment){
+//        SnapshotArray<Actor3D> children = this.children;
+//        Actor3D[] actors = children.begin();
+//        visibleCount = 0;
+//        for (int i = 0, n = children.size; i < n; i++){
+//                Actor3D child = actors[i];
+//                if (!child.isVisible()) continue;
+//                
+//                // update childs matrix
+//                child.transform.setToTranslationAndScaling(child.x, child.y, child.z, child.scaleX, child.scaleY, child.scaleZ);
+//                child.transform.mul(child.rotationMatrix);
+//                Matrix4 m4 = new Matrix4();
+//                m4.setToTranslationAndScaling(x, y, z, scaleX, scaleY, scaleZ);
+//                m4.mul(rotationMatrix);
+//
+//                child.transform.mulLeft(m4);
+//                child.draw(modelBatch, environment);
+//        }
+//        children.end();
+//    }
 
     /** Adds an actor as a child of this group. The actor is first removed from its parent group, if any.
      * @see #remove() */
@@ -165,6 +148,11 @@ public class Group3D extends Actor3D {
     public SnapshotArray<Actor3D> getChildren () {
         return children;
     }
+    
+    public Actor3D getChild(int i)
+    {
+    	return children.get(i);
+    }
 
     public boolean hasChildren () {
         return children.size > 0;
@@ -208,4 +196,9 @@ public class Group3D extends Actor3D {
         for (Actor3D actor3D : children)
             actor3D.dispose();
     }
+
+	public void setRotation(float f) {
+		setYaw(f*MathUtils.radiansToDegrees);
+		
+	}
 }
